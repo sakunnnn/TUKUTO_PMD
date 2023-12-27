@@ -1,0 +1,38 @@
+```mermaid
+stateDiagram-v2
+    state RaspberryPi_power_ON {
+        Other_states
+        state Mission2 {
+            Initialize
+            state Run {
+                Import_HKdata
+                Construct_model
+                Calculate_HealthIndex
+                Calculate_AnomalyScore
+                Detect_anomaly
+                Detect_fault
+                Output_status
+            }
+        Safe
+        End
+        }
+    }
+    [*] --> Other_states : 電源ON
+    Mission2 --> Other_states : 強制的に終了する
+    Other_states --> Initialize : ミッション2を実行する
+    Run --> Safe : エラーが発生する
+    Run --> End : 終了要請を受ける
+    Safe --> Initialize
+    Initialize --> Import_HKdata
+    End --> Other_states
+    Import_HKdata --> Construct_model : モデルが存在しない
+    Construct_model --> Import_HKdata
+    Import_HKdata --> Calculate_HealthIndex : モデルが存在する
+    Calculate_HealthIndex --> Calculate_AnomalyScore
+    Calculate_AnomalyScore --> Detect_anomaly
+    Detect_anomaly --> Output_status : 異常が存在しない
+    Detect_anomaly --> Detect_fault : 異常が存在する
+    Detect_fault --> Output_status
+    Output_status --> Import_HKdata : 終了条件を満たさない
+    Output_status --> End : 終了条件を満たす
+```
